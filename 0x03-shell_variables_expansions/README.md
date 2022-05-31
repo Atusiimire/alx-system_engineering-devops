@@ -11,3 +11,4 @@ script that creates an alias name:ls with value:rm *
 10.script that displays the result of BREATH to the power LOVE
 11.script that converts a number from base 2 to base 10
 script that prints all possible combinations of two letters, except oo, Letters are lower cases, from a to z
+12.script that prints a number with two decimal places, followed by a new line, The number will be stored in the environment variable NUM
