@@ -15,3 +15,5 @@ script that prints all possible combinations of two letters, except oo, Letters 
 14.script that converts a number from base 10 to base 16, The number in base 10 is stored in the environment variable DECIMAL
 15.script that encodes and decodes text using the rot13 encryption. Assume ASCII
 16. script that prints every other line from the input, starting with the first line
+17. shell script that adds the two numbers stored in the environment variables WATER and STIR and prints the result.
+17. shell script that adds the two numbers stored in the environment variables WATER and STIR and prints the result; WATER is in base water, STIR is in base stir, result should be in base bestchol.
