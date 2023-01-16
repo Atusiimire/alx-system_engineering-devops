@@ -21,7 +21,6 @@ def to_csv():
         if t.get('userId') == int(argv[1]):
             TASK_STATUS_TITLE.append((t.get('completed'), t.get('title')))
 
-
     """export to csv"""
     filename = "{}.csv".format(argv[1])
     with open(filename, "w") as csvfile:
