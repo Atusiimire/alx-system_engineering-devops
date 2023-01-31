@@ -1,36 +1,70 @@
 #!/usr/bin/python3
-"""
-Query Reddit API recursively for all hot articles of a given subreddit
+""" querry reddit api for subreddit info
 """
 import requests
+import requests.auth
+from time import sleep
 
 
-def recurse(subreddit, hot_list=[], after="tmp"):
+def authenticate():
+    """ authenticate function
+    doesnt take parameters returns token_type and access_token
     """
-        return all hot articles for a given subreddit
-        return None if invalid subreddit given
+    usr_name = "jgadelugo"
+    temp = "HolbertonPass845"
+
+    secret = "Z4Sa9bA6RRE44qDyhHQiTlW1gd0"
+    client_id = "hy4KvoK0W2iDvw"
+
+    client_auth = requests.auth.HTTPBasicAuth(client_id, secret)
+    post_data = {"grant_type": "password",
+                 "username": usr_name,
+                 "password": temp}
+
+    headers = {"User-Agent": "ChangeMeClient/0.1 by {}".format(usr_name)}
+    response = requests.post("https://www.reddit.com/api/v1/access_token",
+                             auth=client_auth, data=post_data, headers=headers)
+    auth_json = response.json()
+
+    token_type = auth_json['token_type']
+    access_token = auth_json['access_token']
+
+    return (token_type, access_token)
+
+
+def recurse(subreddit, hot_list=[], after=[], t_type=None, a_token=None):
+    """ querry reddit api for hot post
+    recursively get all hot post from subreddit
     """
-    # get user agent
-    # https://stackoverflow.com/questions/10606133/ -->
-    # sending-user-agent-using-requests-library-in-python
-    headers = requests.utils.default_headers()
-    headers.update({'User-Agent': 'My User Agent 1.0'})
+    sub = subreddit
+    subreddit = "/r/{}/hot".format(sub)
+    usr_name = "jgadelugo"
 
-    # update url each recursive call with param "after"
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
-    if after != "tmp":
-        url = url + "?after={}".format(after)
-    r = requests.get(url, headers=headers, allow_redirects=False)
+    if len(after) == 0:
+        t_type, a_token = authenticate()
 
-    # append top titles to hot_list
-    results = r.json().get('data', {}).get('children', [])
-    if not results:
-        return hot_list
-    for e in results:
-        hot_list.append(e.get('data').get('title'))
+    headers = {"Authorization": "{} {}".format(t_type, a_token),
+               "User-Agent": "ChangeMeClient/0.1 by {}".format(usr_name)}
+    if len(after) != 0:
+        param = {"limit": 100, "after": after[-1]}
+    else:
+        param = {"limit": 100}
 
-    # get next param "after" else nothing else to recurse
-    after = r.json().get('data').get('after')
-    if not after:
-        return hot_list
-    return (recurse(subreddit, hot_list, after))
+    sleep(1)
+    query = "https://oauth.reddit.com{}".format(subreddit)
+    res = requests.get(query, headers=headers, params=param)
+
+    status = res.status_code
+
+    if (status != 200):
+        return None
+    else:
+        data = res.json()
+        if data['data']['after'] in after:
+            return hot_list
+        after.append(data['data']['after'])
+        posts = data["data"]['children']
+        for post in posts:
+            hot_list.append(post['data']['title'])
+
+        return recurse(sub, hot_list, after, t_type, a_token)
